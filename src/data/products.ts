@@ -20,7 +20,7 @@ export const products: Product[] = [
     category: 'Aretes',
     sku: 'AE-002',
     stock: 8,
-    image: 'https://images.unsplash.com/photo-1495121605193-b116b5b9c5d5?auto=format&fit=crop&w=900&q=80',
+    image: 'https://images.unsplash.com/photo-1510511459019-5dda7724fd87?auto=format&fit=crop&w=900&q=80',
     alt: 'Aretes dorados colgantes'
   },
   {
