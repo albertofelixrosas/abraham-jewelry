@@ -39,6 +39,11 @@ export default function AdminPage() {
               <p className="mt-4 text-xl font-semibold">Análisis</p>
               <p className="mt-3 text-sm text-slate-300">Ventas, stock y desempeño del negocio.</p>
             </Link>
+            <Link href="/admin/login" className="group rounded-3xl border border-amber-400 bg-amber-500 p-6 text-slate-950 transition hover:bg-amber-400">
+              <p className="text-sm uppercase tracking-[0.2em] font-semibold">Admin</p>
+              <p className="mt-4 text-xl font-semibold">Iniciar sesión</p>
+              <p className="mt-3 text-sm">Accede al login de administrador para autenticación.</p>
+            </Link>
           </div>
         </div>
       </section>

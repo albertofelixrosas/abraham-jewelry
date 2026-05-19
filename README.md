@@ -52,6 +52,17 @@ npm run dev
 
 Abre `http://localhost:3000` en el navegador.
 
+## Variables de entorno
+
+Copia `.env.local.example` a `.env.local` y completa las variables con tu proyecto de Supabase:
+
+```bash
+cp .env.local.example .env.local
+```
+
+- `NEXT_PUBLIC_SUPABASE_URL` — URL de tu proyecto Supabase.
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` — clave pública anon de Supabase.
+
 ## Build
 
 Genera la versión de producción:
@@ -63,9 +74,10 @@ npm run build
 ## Notas
 
 - El frontend actual está preparado para un MVP rápido.
-- La integración con Supabase debe configurarse para manejar autenticación de admin, almacenamiento de imágenes y reglas RLS.
+- La integración con Supabase ya está esbozada con un cliente `supabase-js` y login admin en `/admin/login`.
+- La integración con Supabase debe configurarse con `NEXT_PUBLIC_SUPABASE_URL` y `NEXT_PUBLIC_SUPABASE_ANON_KEY`.
 - El campo `customer_email` en pedidos es opcional para soportar checkout completamente guest.
 
 ## Estado actual
 
-El proyecto compila correctamente y cuenta con la estructura base de UI y rutas. La implementación de negocio adicional queda por desarrollar sobre esta base.
+El proyecto compila correctamente y cuenta con la estructura base de UI, carrito, checkout guest y panel admin. Falta completar el auth real y la sincronización de datos con Supabase.
