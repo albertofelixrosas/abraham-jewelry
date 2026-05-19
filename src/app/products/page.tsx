@@ -1,4 +1,5 @@
-import Link from 'next/link';
+import ProductCard from '@/components/product-card';
+import { products } from '@/data/products';
 
 export default function ProductsPage() {
   return (
@@ -7,16 +8,14 @@ export default function ProductsPage() {
         <div className="rounded-3xl border border-slate-200 bg-white p-10 shadow-lg shadow-slate-200/50">
           <h1 className="text-4xl font-semibold text-slate-950">Catálogo de productos</h1>
           <p className="mt-4 max-w-2xl text-slate-600">
-            Aquí irá la vista de catálogo público con los productos disponibles, filtros de categoría y botones para agregar al carrito.
+            Explora nuestra colección de joyería y agrega tus piezas favoritas al carrito.
           </p>
-          <div className="mt-8 flex flex-col gap-4 sm:flex-row">
-            <Link href="/" className="inline-flex rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400">
-              Volver al inicio
-            </Link>
-            <Link href="/cart" className="inline-flex rounded-full border border-slate-300 bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:border-slate-400">
-              Ver carrito
-            </Link>
-          </div>
+        </div>
+
+        <div className="mt-10 grid gap-8 lg:grid-cols-3">
+          {products.map((product) => (
+            <ProductCard key={product.id} product={product} />
+          ))}
         </div>
       </section>
     </main>
