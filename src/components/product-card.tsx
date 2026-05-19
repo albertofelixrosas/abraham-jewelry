@@ -1,8 +1,13 @@
+'use client';
+
 import Image from 'next/image';
 import type { Product } from '@/types/product';
 import Button from '@/components/button';
+import { useCart } from '@/context/cart-context';
 
 export default function ProductCard({ product }: { product: Product }) {
+  const { addToCart } = useCart();
+
   return (
     <article className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-lg shadow-slate-200/50 transition hover:-translate-y-1 hover:shadow-slate-300/40">
       <div className="relative aspect-[4/3] overflow-hidden bg-slate-100">
@@ -28,7 +33,9 @@ export default function ProductCard({ product }: { product: Product }) {
             <p className="text-lg font-semibold text-slate-950">${product.price.toFixed(2)}</p>
             <p className="text-xs uppercase tracking-[0.2em] text-slate-500">Stock disponible: {product.stock}</p>
           </div>
-          <Button type="button">Agregar al carrito</Button>
+          <Button type="button" onClick={() => addToCart(product)}>
+            Agregar al carrito
+          </Button>
         </div>
       </div>
     </article>
