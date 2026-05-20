@@ -1,17 +1,41 @@
-'use client';
+"use client";
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import ProductCard from '@/components/product-card';
-import { products } from '@/data/products';
+import { products as localProducts } from '@/data/products';
+import { fetchProductsFromSupabase, hasSupabase } from '@/lib/supabase-service';
+import type { Product } from '@/types/product';
 
 export default function ProductsPage() {
   const [query, setQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Todos');
+  const [products, setProducts] = useState<Product[]>(localProducts);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const categories = useMemo(
     () => ['Todos', ...Array.from(new Set(products.map((product) => product.category)))],
-    []
+    [products]
   );
+
+  useEffect(() => {
+    if (!hasSupabase) return;
+
+    setLoading(true);
+    setError(null);
+
+    fetchProductsFromSupabase()
+      .then((data) => {
+        if (data.length > 0) {
+          setProducts(data);
+        }
+      })
+      .catch((fetchError) => {
+        console.error(fetchError);
+        setError('No se pudieron cargar los productos desde Supabase. Usando datos locales.');
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {
@@ -64,6 +88,11 @@ export default function ProductsPage() {
                 ))}
               </div>
             </div>
+          </div>
+          <div className="mt-4 flex flex-col gap-2 text-sm text-slate-600 sm:flex-row sm:items-center sm:justify-between">
+            <p>{hasSupabase ? 'Catálogo conectado a Supabase.' : 'Modo local activado: datos de ejemplo.'}</p>
+            {loading && <p className="text-slate-500">Cargando productos desde Supabase...</p>}
+            {error && <p className="text-red-600">{error}</p>}
           </div>
         </div>
 

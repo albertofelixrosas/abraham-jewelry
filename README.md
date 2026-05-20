@@ -54,10 +54,10 @@ Abre `http://localhost:3000` en el navegador.
 
 ## Variables de entorno
 
-Copia `.env.local.example` a `.env.local` y completa las variables con tu proyecto de Supabase:
+Copia `.env.example` a `.env` y completa las variables con tu proyecto de Supabase:
 
 ```bash
-cp .env.local.example .env.local
+cp .env.example .env
 ```
 
 - `NEXT_PUBLIC_SUPABASE_URL` — URL de tu proyecto Supabase.
