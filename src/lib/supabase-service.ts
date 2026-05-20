@@ -21,7 +21,7 @@ export async function fetchProductsFromSupabase(): Promise<Product[]> {
   }
 
   const { data, error } = await supabase
-    .from<SupabaseProductRow>('products')
+    .from('products')
     .select('id,name,description,price,sku,stock,category:categories(name),product_images(url,alt,sort_order)')
     .eq('active', true)
     .order('created_at', { ascending: false });
@@ -31,7 +31,9 @@ export async function fetchProductsFromSupabase(): Promise<Product[]> {
     return [];
   }
 
-  return data.map((item) => {
+  const rows = data as unknown as SupabaseProductRow[];
+
+  return rows.map((item) => {
     const imageUrl = item.product_images?.[0]?.url ?? 'https://images.unsplash.com/photo-1522312346375-d1a52e2b99b3?auto=format&fit=crop&w=900&q=80';
     const imageAlt = item.product_images?.[0]?.alt ?? item.name;
 

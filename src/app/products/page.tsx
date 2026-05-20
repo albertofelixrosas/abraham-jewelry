@@ -35,7 +35,7 @@ export default function ProductsPage() {
         setError('No se pudieron cargar los productos desde Supabase. Usando datos locales.');
       })
       .finally(() => setLoading(false));
-  }, []);
+  }, [hasSupabase]);
 
   const filteredProducts = useMemo(() => {
     return products.filter((product) => {

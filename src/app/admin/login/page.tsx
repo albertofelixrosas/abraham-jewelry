@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import Button from '@/components/button';
@@ -8,7 +8,7 @@ import { useAdminAuth } from '@/context/admin-auth-context';
 
 export default function AdminLoginPage() {
   const router = useRouter();
-  const { signIn, loading } = useAdminAuth();
+  const { signIn, loading, user } = useAdminAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -25,6 +25,12 @@ export default function AdminLoginPage() {
 
     router.push('/admin');
   };
+
+  useEffect(() => {
+    if (!loading && user) {
+      router.push('/admin');
+    }
+  }, [user, loading, router]);
 
   return (
     <main className="min-h-screen bg-gray-50 text-slate-950">
