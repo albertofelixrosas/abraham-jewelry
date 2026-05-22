@@ -45,7 +45,7 @@ create table product_images (
 -- Usuarios admin
 create table admin_users (
   id uuid primary key default gen_random_uuid(),
-  auth_uid uuid unique,
+  auth_uid uuid not null unique references auth.users(id) on delete cascade,
   email text not null unique,
   name text not null,
   role text not null default 'admin',
