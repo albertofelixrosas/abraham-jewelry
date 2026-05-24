@@ -13,9 +13,9 @@ export default function AdminProductsPage() {
             <Link href="/admin" className="rounded-full border border-slate-300 bg-slate-950 px-6 py-3 text-sm font-semibold text-white transition hover:bg-slate-800">
               Volver al panel admin
             </Link>
-            <button type="button" className="rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400">
-              Nuevo producto (pendiente)
-            </button>
+            <Link href="/admin/products/new" className="rounded-full bg-amber-500 px-6 py-3 text-sm font-semibold text-slate-950 transition hover:bg-amber-400">
+              Nuevo producto
+            </Link>
           </div>
         </div>
       </section>

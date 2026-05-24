@@ -102,3 +102,79 @@ export async function createGuestOrder(order: CreateOrderPayload) {
 
   return { orderId: orderData.id, error: null };
 }
+
+export type CreateProductPayload = {
+  name: string;
+  description?: string | null;
+  price: number | string;
+  category?: string | null;
+  sku?: string | null;
+  stock: number | string;
+  image?: string | null;
+  alt?: string | null;
+};
+
+function slugify(text: string) {
+  return text
+    .toString()
+    .normalize('NFKD')
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-')
+    .replace(/[^a-z0-9-]/g, '')
+    .replace(/--+/g, '-');
+}
+
+export async function createProduct(payload: CreateProductPayload) {
+  if (!supabase) {
+    return { productId: null as string | null, error: new Error('Supabase no está configurado.') };
+  }
+
+  try {
+    // Ensure category exists (simple find-or-create by name)
+    let categoryId: string | null = null;
+    if (payload.category) {
+      const { data: foundCats, error: catErr } = await supabase.from('categories').select('id').eq('name', payload.category).limit(1).maybeSingle();
+      if (catErr) {
+        console.error('Error buscando categoría:', catErr.message);
+      }
+      if (foundCats && (foundCats as any).id) {
+        categoryId = (foundCats as any).id;
+      } else {
+        const slug = slugify(payload.category);
+        const { data: newCat, error: newCatErr } = await supabase.from('categories').insert([{ name: payload.category, slug }]).select('id').maybeSingle();
+        if (newCat && (newCat as any).id) categoryId = (newCat as any).id;
+        if (newCatErr) console.error('Error creando categoría:', newCatErr.message);
+      }
+    }
+
+    const productRow: any = {
+      name: payload.name,
+      description: payload.description ?? null,
+      price: payload.price,
+      sku: payload.sku ?? null,
+      stock: payload.stock,
+      category_id: categoryId,
+      active: true
+    };
+
+    const { data: prodData, error: prodErr } = await supabase.from('products').insert([productRow]).select('id').maybeSingle();
+    if (prodErr || !prodData) {
+      console.error('Error creando producto:', prodErr?.message ?? 'unknown');
+      return { productId: null as string | null, error: prodErr ?? new Error('No se creó el producto') };
+    }
+
+    const productId = (prodData as any).id as string;
+
+    if (payload.image) {
+      const imageRow = { product_id: productId, url: payload.image, alt: payload.alt ?? payload.name };
+      const { error: imgErr } = await supabase.from('product_images').insert([imageRow]);
+      if (imgErr) console.error('Error creando imagen de producto:', imgErr.message);
+    }
+
+    return { productId, error: null };
+  } catch (err: any) {
+    console.error('createProduct error', err?.message ?? err);
+    return { productId: null as string | null, error: err instanceof Error ? err : new Error(String(err)) };
+  }
+}
