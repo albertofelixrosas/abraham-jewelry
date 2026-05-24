@@ -30,12 +30,18 @@ export function AdminAuthProvider({ children }: { children: ReactNode }) {
       const { data, error } = await supabase.auth.getSession();
       if (!error && data?.session?.user) {
         setUser(data.session.user);
+        // debug: show authenticated user id/email in console
+        // Remove or comment out in production if desired
+        // eslint-disable-next-line no-console
+        console.debug('AdminAuthProvider: authenticated user', { id: data.session.user.id, email: data.session.user.email });
       }
       setLoading(false);
 
       const { data: listener } = supabase.auth.onAuthStateChange((_event, session) => {
         setUser(session?.user ?? null);
         setLoading(false);
+        // eslint-disable-next-line no-console
+        console.debug('AdminAuthProvider: auth state changed', { user: session?.user ? { id: session.user.id, email: session.user.email } : null });
       });
 
       subscription = listener?.subscription ?? null;

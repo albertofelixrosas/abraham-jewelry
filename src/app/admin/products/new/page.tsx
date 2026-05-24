@@ -1,10 +1,12 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import AdminGuard from '@/components/admin-guard';
 import Button from '@/components/button';
 import { createProduct } from '@/lib/supabase-service';
+import { fetchCategories } from '@/lib/supabase-service';
+import { useRouter } from 'next/navigation';
 
 type FormState = {
   name: string;
@@ -32,6 +34,9 @@ export default function NewProductPage() {
   const [errors, setErrors] = useState<Partial<Record<keyof FormState, string>>>({});
   const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [categories, setCategories] = useState<{ id: string; name: string }[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const router = useRouter();
 
   function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
     const { name, value } = e.target;
@@ -46,6 +51,30 @@ export default function NewProductPage() {
     if (!form.stock || Number.isNaN(Number(form.stock)) || Number(form.stock) < 0) next.stock = 'Stock inválido';
     return next;
   }
+
+  useEffect(() => {
+    let mounted = true;
+    async function load() {
+      setLoadingCategories(true);
+      const cats = await fetchCategories();
+      if (!mounted) return;
+      setCategories(cats);
+      setLoadingCategories(false);
+
+      if (!cats || cats.length === 0) {
+        // Si no hay categorías, redirigir a la página de creación de categorías
+        router.push('/admin/categories/new');
+      } else {
+        // Preseleccionar la primera categoría si no hay selección
+        setForm((s) => ({ ...s, category: s.category || cats[0].name }));
+      }
+    }
+
+    load();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -119,7 +148,17 @@ export default function NewProductPage() {
 
               <div>
                 <label className="mb-2 block text-sm font-medium text-slate-700">Categoría</label>
-                <input name="category" value={form.category} onChange={handleChange} className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3" />
+                {loadingCategories ? (
+                  <div className="h-10 w-full animate-pulse rounded-lg bg-slate-100" />
+                ) : (
+                  <select name="category" value={form.category} onChange={handleChange} className="w-full rounded-lg border border-slate-200 bg-white px-4 py-3">
+                    {categories.map((c) => (
+                      <option key={c.id} value={c.name}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                )}
               </div>
 
               <div className="sm:col-span-2">

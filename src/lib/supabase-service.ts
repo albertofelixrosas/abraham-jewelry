@@ -114,6 +114,49 @@ export type CreateProductPayload = {
   alt?: string | null;
 };
 
+export type CategoryRow = { id: string; name: string };
+
+export async function fetchCategories(): Promise<CategoryRow[]> {
+  if (!supabase) return [];
+
+  const { data, error } = await supabase.from('categories').select('id,name').order('name', { ascending: true });
+  if (error || !data) {
+    console.error('Error fetching categories from Supabase:', error?.message ?? 'unknown');
+    return [];
+  }
+
+  return data as CategoryRow[];
+}
+
+export async function createCategory(name: string, slug?: string) {
+  if (!supabase) {
+    return { categoryId: null as string | null, error: new Error('Supabase no está configurado.') };
+  }
+
+  try {
+    // Ensure user is authenticated client-side; this will provide a clearer error
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      if (!sessionData?.session?.user) {
+        return { categoryId: null as string | null, error: new Error('Usuario no autenticado. Inicia sesión como admin antes de crear categorías.') };
+      }
+    } catch (sessErr) {
+      // ignore and proceed; server-side may not have auth
+    }
+    const finalSlug = slug && slug.trim() ? slugify(slug) : slugify(name);
+    const { data, error } = await supabase.from('categories').insert([{ name: name.trim(), slug: finalSlug }]).select('id').maybeSingle();
+    if (error || !data) {
+      console.error('Error creando categoría:', error?.message ?? 'unknown');
+      return { categoryId: null as string | null, error: error ?? new Error('No se creó la categoría') };
+    }
+
+    return { categoryId: (data as any).id as string, error: null };
+  } catch (err: any) {
+    console.error('createCategory error', err?.message ?? err);
+    return { categoryId: null as string | null, error: err instanceof Error ? err : new Error(String(err)) };
+  }
+}
+
 function slugify(text: string) {
   return text
     .toString()
